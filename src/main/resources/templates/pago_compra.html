@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Pago de Compra</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .boleta {
+            border: 1px solid #000;
+            padding: 20px;
+        }
+
+        .titulo-boleta {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .item-boleta {
+            margin-bottom: 10px;
+        }
+
+        .formulario-pago {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Pago de Compra</h1>
+        <div class="boleta">
+            <h2 class="titulo-boleta">Detalles de la Compra</h2>
+            <div class="item-boleta">
+                <p><span th:text="'Cliente: ' + ${clienteNombre}"></span></p>
+            </div>
+            <div class="item-boleta">
+                <p><span th:text="'Habitación: ' + ${habitacionTipo}"></span></p>
+            </div>
+            <div class="item-boleta">
+                <p><span th:text="'Monto Total: $' + ${montoTotal}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 formulario-pago">
+        <!-- Aquí puedes agregar el formulario de pago si es necesario -->
+    </div>
+    <div class="container mt-5 formulario-pago">
+    <a href="#" class="btn btn-primary" onclick="confirmarPago()">Confirmar Pago</a>
+</div>
+
+<script>
+    function confirmarPago() {
+        if (confirm("¿Estás seguro de confirmar el pago?")) {
+            // Aquí puedes redirigir o realizar otras acciones después de la confirmación
+            window.location.href = "/realizarPago";
+        }
+    }
+</script>
+
+<div class="modal fade" id="confirmacionModal" tabindex="-1" role="dialog" aria-labelledby="confirmacionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmacionModalLabel">Confirmación de Pago</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de confirmar el pago?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <a href="/reservas/confirmarPago" class="btn btn-primary">Confirmar Pago</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmarPago() {
+        // Mostrar el modal de confirmación
+        $('#confirmacionModal').modal('show');
+    }
+</script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
