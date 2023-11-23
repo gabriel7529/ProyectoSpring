@@ -32,6 +32,12 @@ public class Reserva {
 	private Date fechaInicio;
 	@Temporal(TemporalType.DATE)
 	private Date fechaFin;
+	@Override
+	public String toString() {
+		return "Reserva [ cliente=" + cliente + ", habitacion=" + habitacion + ", fechaInicio="
+				+ fechaInicio + ", fechaFin=" + fechaFin + ", total=" + total + ", estado=" + estado + "]";
+	}
+
 	private double total;
 
 	private String estado = "Pendiente";

@@ -12,8 +12,11 @@ import com.cibertec.service.ClienteService;
 import com.cibertec.service.HabitacionService;
 import com.cibertec.service.ReservaService;
 
+import jakarta.transaction.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 @Controller
@@ -22,11 +25,13 @@ public class ReservaController {
 
 	private final HabitacionService habitacionService;
 	private final ClienteService clienteService;
+	private final ReservaService reservaServices;
 
 	public ReservaController(ReservaService reservaService, HabitacionService habitacionService,
-			ClienteService clienteService) {
+			ClienteService clienteService,ReservaService reservaServices) {
 		this.habitacionService = habitacionService;
 		this.clienteService = clienteService;
+		this.reservaServices = reservaService;
 
 	}
 
@@ -48,41 +53,40 @@ public class ReservaController {
 	public String agregarAlCarrito(@RequestParam("id") int habitacionId, Model model) {
 		Habitacion habitacion = habitacionService.obtenerHabitacionPorId(habitacionId).orElse(null);
 		if (habitacion != null) {
-			carrito.clear();
 			carrito.add(habitacion);
 			model.addAttribute("habitacionesEnCarrito", carrito);
 		}
 
 		return "redirect:/reservas/verCarrito";
 	}
-
+	
 	@PostMapping("/procesarCompra")
 	public String procesarCompra(@ModelAttribute("reserva") Reserva reserva, Model model) {
-	    
 	    if (carrito.size() > 0) {
 	        try {
 	            Habitacion habitacionEnCarrito = carrito.get(0);
-
-        
 	            int clienteId = reserva.getCliente().getId();
-	           
 	            Cliente clienteDeseado = clienteService.obtenerClientePorId(clienteId)
 	                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado. ID: " + clienteId));
-
-	            reserva.setCliente(clienteDeseado);	          
-	            reserva.setHabitacion(habitacionEnCarrito);
-	            reserva.setTotal(habitacionEnCarrito.getPrecio());
+	     
+	        	Reserva reservabd = new Reserva();
+	        	reservabd.setHabitacion(habitacionEnCarrito);
+	            reservabd.setFechaFin(reserva.getFechaFin());
+	            reservabd.setFechaInicio(reserva.getFechaInicio());
+	            reservabd.setCliente(clienteDeseado);
+	            reservabd.setTotal(habitacionEnCarrito.getPrecio());
 	            
-        	            
-          
-            
-	         
-	            model.addAttribute("reservaId", reserva.getId());
-	            model.addAttribute("clienteNombre", clienteDeseado.getNombre());
-	            model.addAttribute("habitacionTipo", habitacionEnCarrito.getTipo());
-	            model.addAttribute("montoTotal", reserva.getTotal());
-
+	            System.out.println("Uso " + reservabd);
+	            
+	            if (clienteDeseado != null && habitacionEnCarrito != null) {
+	                
+	                reservaServices.guardarReserva(reservabd);
+	            } else {
+	                System.out.println("Cliente no encontrado. ID: " + clienteId + " " + habitacionEnCarrito.getId());
+	            }
+	            model.addAttribute("reserva", reservabd);
 	            return "pago_compra";
+	            
 	        } catch (Exception e) {
 	            model.addAttribute("error", "Error al procesar la reserva. Inténtalo nuevamente. " + e.getMessage());
 	            return "error";
@@ -90,13 +94,27 @@ public class ReservaController {
 	    } else {
 	        return "error";
 	    }
+	    	
 	}
+	
+	@GetMapping("/confirmarpago")
+	public String confirmarPago(@RequestParam("reservaId") int reservaId, Model model) {
+	   
+		try {
+	        
+			  Reserva reserva = reservaServices.obtenerReservaPorId(reservaId)
+		                .orElseThrow(() -> new RuntimeException("Reserva no encontrada. ID: " + reservaId));
+	        reservaServices.actualizarEstado(reserva, "Cancelado");
 
-	@GetMapping("/confirmarPago")
-	public String confirmarPago(Model model) {
-	    
-	    model.addAttribute("mensajeConfirmacion", "¡Pago confirmado! Gracias por tu compra.");
-	    return "confirmacion_pago";
+	        model.addAttribute("mensajeConfirmacion", "¡Pago confirmado! Gracias por tu compra.");
+	        carrito.clear();
+	        return "confirmacion_pago";
+	        
+	    } catch (Exception e) {
+	        
+	        model.addAttribute("error", "Error al confirmar el pago. " + e.getMessage());
+	        return "error";
+	    }
 	}
 	
 	

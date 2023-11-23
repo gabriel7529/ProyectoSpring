@@ -3,8 +3,11 @@ package com.cibertec.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cibertec.model.Cliente;
 import com.cibertec.model.Reserva;
 import com.cibertec.repository.IReservaRepositorio;
+
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +25,20 @@ public class ReservaService {
 	public Optional<Reserva> obtenerReservaPorId(int id) {
 		return reservaRepository.findById(id);
 	}
-
+	
+	
+	
 	public void guardarReserva(Reserva reserva) {
 		reservaRepository.save(reserva);
 	}
 
 	public void eliminarReserva(int id) {
 		reservaRepository.deleteById(id);
+	}
+
+	public void actualizarEstado(Reserva reserva, String nuevoEstado) {
+		reserva.setEstado(nuevoEstado);
+	    reservaRepository.save(reserva);
+		
 	}
 }
