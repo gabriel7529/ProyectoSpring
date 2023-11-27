@@ -12,7 +12,7 @@ import com.cibertec.service.ClienteService;
 import com.cibertec.service.HabitacionService;
 import com.cibertec.service.ReservaService;
 
-import jakarta.transaction.Transactional;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +107,7 @@ public class ReservaController {
 	        reservaServices.actualizarEstado(reserva, "Cancelado");
 
 	        model.addAttribute("mensajeConfirmacion", "¡Pago confirmado! Gracias por tu compra.");
-	        carrito.clear();
+	        carrito.clear();	
 	        return "confirmacion_pago";
 	        
 	    } catch (Exception e) {
